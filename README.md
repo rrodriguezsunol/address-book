@@ -24,3 +24,11 @@ Some insights into what we'll be looking for (and what we will not):
 - We will be looking at how you approach the task (e.g. how you break it into sub-tasks) and how you structure your code to answer the questions
 
 Good Luck!
+
+## Assumptions
+
+Assume max number of contacts is Integer.MAX_VALUE
+
+Assume CSV format follows apache commons-csv DEFAULT formatting settings.
+
+Assume the three contact fields are mandatory.
