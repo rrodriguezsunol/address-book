@@ -12,6 +12,7 @@ public class AddressBookAppSteps {
     private AddressBookApp addressBookApp;
     private int numberOfMales;
     private List<String> nameOfOldestPerson;
+    private long ageDifferenceInDays;
 
     @Given("^I launch the address book app$")
     public void iLaunchTheAddressBookApp() throws Throwable {
@@ -37,4 +38,15 @@ public class AddressBookAppSteps {
     public void theResultIs(String contactName) throws Throwable {
         assertThat(nameOfOldestPerson).containsExactly(contactName);
     }
+
+    @When("^I ask for the age difference in days between Bill McKnight and Paul Robinson$")
+    public void iAskForTheAgeDifferenceInDaysBetweenBillMcKnightAndPaulRobinson() throws Throwable {
+        ageDifferenceInDays = addressBookApp.ageDifferenceInDaysBetweenBillAndPaul();
+    }
+
+    @Then("^the result is (\\d+)$")
+    public void the_result_is(int expectedAgeDifference) throws Throwable {
+        assertThat(ageDifferenceInDays).isEqualTo(expectedAgeDifference);
+    }
+
 }

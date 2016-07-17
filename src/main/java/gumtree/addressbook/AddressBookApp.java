@@ -25,4 +25,8 @@ public class AddressBookApp {
     public List<String> getOldestPerson() {
         return addressBookService.findOldestPeople().stream().map(Contact::getFullName).collect(toList());
     }
+
+    public long ageDifferenceInDaysBetweenBillAndPaul() {
+        return addressBookService.ageDifferenceInDays("Bill McKnight", "Paul Robinson");
+    }
 }

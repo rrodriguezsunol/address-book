@@ -3,7 +3,6 @@ package gumtree.addressbook.domain;
 import java.time.LocalDate;
 import java.util.Objects;
 
-import com.sun.istack.internal.NotNull;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
@@ -55,7 +54,7 @@ public final class Contact implements Comparable<Contact> {
     }
 
     @Override
-    public int compareTo(@NotNull Contact other) {
+    public int compareTo(Contact other) {
         return fullName.compareTo(other.fullName);
     }
 }

@@ -7,10 +7,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 import gumtree.addressbook.domain.Contact;
 import gumtree.addressbook.domain.Gender;
@@ -58,12 +55,16 @@ public class FileBasedAddressBookRepository implements AddressBookRepository {
         return new ArrayList<>(contacts);
     }
 
+    @Override
+    public Optional<Contact> findByFullName(String fullName) {
+        return contacts.stream().filter(contact -> contact.getFullName().equals(fullName)).findFirst();
+    }
+
     private void validateNumberOfColumns(CSVRecord csvRecord) {
         if (csvRecord.size() != 3) {
             throw new PersistenceException(csvRecord.getRecordNumber(), "There are missing fields");
         }
     }
-
 
     private Gender mapToGender(CSVRecord csvRecord) {
         String trimmedGenderValue = csvRecord.get(GENDER_COLUMN_INDEX).trim();

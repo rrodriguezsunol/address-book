@@ -3,6 +3,7 @@ package gumtree.addressbook.persistence;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import gumtree.addressbook.domain.Contact;
 import gumtree.addressbook.domain.Gender;
@@ -112,4 +113,24 @@ public class FileBasedAddressBookRepositoryTest {
         List<Contact> secondFindAll = addressBook.findAll();
         assertThat(secondFindAll).isEqualTo(copyOfFirstFindAll);
     }
+
+    @Test
+    public void findByNameReturnsEmptyWhenAddressBookIsEmpty() {
+        FileBasedAddressBookRepository addressBook = new FileBasedAddressBookRepository("EmptyAddressBook");
+
+        Optional<Contact> actualContact = addressBook.findByFullName("any name");
+
+        assertThat(actualContact).isEmpty();
+    }
+
+    @Test
+    public void findByNameReturnsContactWhenOneContactWithSameNameIsFound() {
+        FileBasedAddressBookRepository addressBook = new FileBasedAddressBookRepository("AddressBookWithMultipleContacts");
+
+        Optional<Contact> actualContact = addressBook.findByFullName("Gemma Lane");
+
+        assertThat(actualContact).contains(new Contact("Gemma Lane", Gender.FEMALE, LocalDate.of(1991, 11, 20)));
+    }
+
+    // Todo: what to do when more than one contact have the same name?
 }

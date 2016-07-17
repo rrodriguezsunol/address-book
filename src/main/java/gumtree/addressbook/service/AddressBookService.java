@@ -1,5 +1,6 @@
 package gumtree.addressbook.service;
 
+import java.time.temporal.ChronoUnit;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -39,5 +40,15 @@ public final class AddressBookService {
         return allContacts.stream()
                 .filter(contact -> contact.getDateOfBirth().equals(oldestContact.getDateOfBirth()))
                 .collect(Collectors.toList());
+    }
+
+    public long ageDifferenceInDays(String firstPersonFullName, String secondPersonFullName) {
+        Contact firstPerson = addressBookRepository.findByFullName(firstPersonFullName)
+                .orElseThrow(() -> new IllegalArgumentException("firstPersonFullName not found"));
+
+        Contact secondPerson = addressBookRepository.findByFullName(secondPersonFullName)
+                .orElseThrow(() -> new IllegalArgumentException("secondPersonFullName not found"));
+
+        return Math.abs(ChronoUnit.DAYS.between(firstPerson.getDateOfBirth(), secondPerson.getDateOfBirth()));
     }
 }
