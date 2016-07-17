@@ -9,4 +9,3 @@ Feature: Address book application
     Given I launch the address book app
     When I ask for the oldest person
     Then the result is "Wes Jackson"
-

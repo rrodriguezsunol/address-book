@@ -1,5 +1,7 @@
 package gumtree.addressbook;
 
+import java.util.List;
+
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
@@ -9,7 +11,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class AddressBookAppSteps {
     private AddressBookApp addressBookApp;
     private int numberOfMales;
-    private String nameOfOldestPerson;
+    private List<String> nameOfOldestPerson;
 
     @Given("^I launch the address book app$")
     public void iLaunchTheAddressBookApp() throws Throwable {
@@ -33,6 +35,6 @@ public class AddressBookAppSteps {
 
     @Then("^the result is \"(.*?)\"$")
     public void theResultIs(String contactName) throws Throwable {
-        assertThat(nameOfOldestPerson).isEqualTo(contactName);
+        assertThat(nameOfOldestPerson).containsExactly(contactName);
     }
 }

@@ -1,10 +1,14 @@
 package gumtree.addressbook;
 
+import java.util.List;
+
 import gumtree.addressbook.domain.Contact;
 import gumtree.addressbook.domain.Gender;
 import gumtree.addressbook.persistence.AddressBookRepository;
 import gumtree.addressbook.persistence.FileBasedAddressBookRepository;
 import gumtree.addressbook.service.AddressBookService;
+
+import static java.util.stream.Collectors.toList;
 
 public class AddressBookApp {
     private AddressBookService addressBookService;
@@ -18,7 +22,7 @@ public class AddressBookApp {
         return addressBookService.countByGender(Gender.MALE);
     }
 
-    public String getOldestPerson() {
-        return addressBookService.findOldestPerson().map(Contact::getFullName).orElse("");
+    public List<String> getOldestPerson() {
+        return addressBookService.findOldestPeople().stream().map(Contact::getFullName).collect(toList());
     }
 }

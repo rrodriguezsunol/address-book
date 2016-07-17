@@ -3,10 +3,11 @@ package gumtree.addressbook.domain;
 import java.time.LocalDate;
 import java.util.Objects;
 
+import com.sun.istack.internal.NotNull;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
-public final class Contact {
+public final class Contact implements Comparable<Contact> {
     private String fullName;
     private Gender gender;
     private LocalDate dateOfBirth;
@@ -51,5 +52,10 @@ public final class Contact {
                 .append("gender", gender)
                 .append("dateOfBirth", dateOfBirth)
                 .toString();
+    }
+
+    @Override
+    public int compareTo(@NotNull Contact other) {
+        return fullName.compareTo(other.fullName);
     }
 }
