@@ -1,5 +1,6 @@
 package gumtree.addressbook.domain;
 
+import java.time.LocalDate;
 import java.util.Objects;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -8,9 +9,9 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 public final class Contact {
     private String fullName;
     private Gender gender;
-    private String dateOfBirth;
+    private LocalDate dateOfBirth;
 
-    public Contact(String fullName, Gender gender, String dateOfBirth) {
+    public Contact(String fullName, Gender gender, LocalDate dateOfBirth) {
         this.fullName = fullName;
         this.gender = gender;
         this.dateOfBirth = dateOfBirth;
@@ -24,7 +25,7 @@ public final class Contact {
         return gender;
     }
 
-    public String getDateOfBirth() {
+    public LocalDate getDateOfBirth() {
         return dateOfBirth;
     }
 

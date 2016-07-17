@@ -1,5 +1,6 @@
 package gumtree.addressbook.persistence;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -44,7 +45,17 @@ public class FileBasedAddressBookRepositoryTest {
         Throwable caughtException = catchThrowable(() -> new FileBasedAddressBookRepository("AddressBookWithOneRecordWithInvalidGender"));
 
         assertThat(caughtException).isExactlyInstanceOf(PersistenceException.class);
-        assertThat(caughtException.getMessage()).isEqualTo("Line 2 is invalid. Gender must be one of \"Male\" or \"Female\". value=\"invalid gender\"");
+        assertThat(caughtException.getMessage())
+                .isEqualTo("Line 2 is invalid. Gender must be one of \"Male\" or \"Female\". value=\"invalid gender\"");
+    }
+
+    @Test
+    public void constructorThrowsExceptionWhenDateOfBirthHasInvalidFormat() {
+        Throwable caughtException = catchThrowable(() -> new FileBasedAddressBookRepository("AddressBookWithOneRecordWithInvalidDateOfBirth"));
+
+        assertThat(caughtException).isExactlyInstanceOf(PersistenceException.class);
+        assertThat(caughtException.getMessage())
+                .isEqualTo("Line 3 is invalid. Date of birth must have the format \"dd/MM/yy\". value=\"invalid dob\"");
     }
 
     @Test
@@ -62,7 +73,7 @@ public class FileBasedAddressBookRepositoryTest {
 
         List<Contact> actualContactList = addressBook.findAll();
 
-        Contact bill = new Contact("Bill McKnight", Gender.MALE, "16/03/77");
+        Contact bill = new Contact("Bill McKnight", Gender.MALE, LocalDate.of(1977, 3, 16));
         assertThat(actualContactList).containsExactly(bill);
     }
 
@@ -72,7 +83,7 @@ public class FileBasedAddressBookRepositoryTest {
 
         List<Contact> actualContactList = addressBook.findAll();
 
-        Contact sarah = new Contact("Sarah Stone", Gender.FEMALE, "20/09/80");
+        Contact sarah = new Contact("Sarah Stone", Gender.FEMALE, LocalDate.of(1980, 9, 20));
         assertThat(actualContactList).containsExactly(sarah);
     }
 
@@ -82,9 +93,9 @@ public class FileBasedAddressBookRepositoryTest {
 
         List<Contact> actualContactList = addressBook.findAll();
 
-        Contact paul = new Contact("Paul Robinson", Gender.MALE, "15/01/85");
-        Contact gemma = new Contact("Gemma Lane", Gender.FEMALE, "20/11/91");
-        Contact wes = new Contact("Wes Jackson", Gender.MALE, "14/08/74");
+        Contact paul = new Contact("Paul Robinson", Gender.MALE, LocalDate.of(1985, 1, 15));
+        Contact gemma = new Contact("Gemma Lane", Gender.FEMALE, LocalDate.of(1991, 11, 20));
+        Contact wes = new Contact("Wes Jackson", Gender.MALE, LocalDate.of(1974, 8, 14));
         assertThat(actualContactList).containsExactly(paul, gemma, wes);
     }
 
@@ -96,7 +107,7 @@ public class FileBasedAddressBookRepositoryTest {
 
         List<Contact> copyOfFirstFindAll = new ArrayList<>(firstFindAll);
 
-        firstFindAll.add(new Contact("New contact", Gender.MALE, "01/01/89"));
+        firstFindAll.add(new Contact("New contact", Gender.MALE, LocalDate.now()));
 
         List<Contact> secondFindAll = addressBook.findAll();
         assertThat(secondFindAll).isEqualTo(copyOfFirstFindAll);

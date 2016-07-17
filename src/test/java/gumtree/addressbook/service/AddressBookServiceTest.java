@@ -1,6 +1,8 @@
 package gumtree.addressbook.service;
 
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 import gumtree.addressbook.domain.Contact;
 import gumtree.addressbook.domain.Gender;
@@ -41,7 +43,7 @@ public class AddressBookServiceTest {
 
     @Test
     public void countFemalesReturnsOneWhenRepositoryReturnsListWithOneFemale() {
-        List<Contact> singleFemaleContactList = singletonList(new Contact("Sara Stone", Gender.FEMALE, "01/01/89"));
+        List<Contact> singleFemaleContactList = singletonList(new Contact("Sara Stone", Gender.FEMALE, LocalDate.now()));
         when(mockAddressBookRepository.findAll()).thenReturn(singleFemaleContactList);
 
         int actualCount = addressBookService.countByGender(Gender.FEMALE);
@@ -51,7 +53,7 @@ public class AddressBookServiceTest {
 
     @Test
     public void countMalesReturnsOneWhenRepositoryReturnsListWithOneMale() {
-        List<Contact> singleFemaleContactList = singletonList(new Contact("John Doe", Gender.MALE, "01/01/89"));
+        List<Contact> singleFemaleContactList = singletonList(new Contact("John Doe", Gender.MALE, LocalDate.now()));
         when(mockAddressBookRepository.findAll()).thenReturn(singleFemaleContactList);
 
         int actualCount = addressBookService.countByGender(Gender.MALE);
@@ -62,9 +64,9 @@ public class AddressBookServiceTest {
     @Test
     public void countFemalesReturnsFemaleCountWhenRepositoryReturnsListWithMixedGenders() {
         List<Contact> mixedGenderContactList = asList(
-                new Contact("Sara Stone", Gender.FEMALE, "01/01/89"),
-                new Contact("John Doe", Gender.MALE, "01/01/89"),
-                new Contact("Gemma Lane", Gender.FEMALE, "01/01/89"));
+                new Contact("Sara Stone", Gender.FEMALE, LocalDate.now()),
+                new Contact("John Doe", Gender.MALE, LocalDate.now()),
+                new Contact("Gemma Lane", Gender.FEMALE, LocalDate.now()));
         when(mockAddressBookRepository.findAll()).thenReturn(mixedGenderContactList);
 
         int actualCount = addressBookService.countByGender(Gender.FEMALE);
@@ -75,9 +77,9 @@ public class AddressBookServiceTest {
     @Test
     public void countMalesReturnsMaleCountWhenRepositoryReturnsListWithMixedGenders() {
         List<Contact> mixedGenderContactList = asList(
-                new Contact("Tom Ford", Gender.MALE, "01/01/89"),
-                new Contact("Sara Stone", Gender.FEMALE, "01/01/89"),
-                new Contact("John Doe", Gender.MALE, "01/01/89"));
+                new Contact("Tom Ford", Gender.MALE, LocalDate.now()),
+                new Contact("Sara Stone", Gender.FEMALE, LocalDate.now()),
+                new Contact("John Doe", Gender.MALE, LocalDate.now()));
         when(mockAddressBookRepository.findAll()).thenReturn(mixedGenderContactList);
 
         int actualCount = addressBookService.countByGender(Gender.MALE);
@@ -93,4 +95,28 @@ public class AddressBookServiceTest {
         assertThat(caughtException).isExactlyInstanceOf(NullPointerException.class);
         assertThat(caughtException.getMessage()).isEqualTo("gender cannot be null");
     }
+
+    @Test
+    public void findOldestPersonReturnsOptionalWhenContactListIsEmpty() {
+        when(mockAddressBookRepository.findAll()).thenReturn(emptyList());
+
+        Optional<Contact> actualOptionalContact = addressBookService.findOldestPerson();
+
+        assertThat(actualOptionalContact).isEmpty();
+    }
+
+    @Test
+    public void findOldestPersonReturnsOldestPerson() {
+        Contact oldestPerson = new Contact("Sara Stone", Gender.FEMALE, LocalDate.of(1980, 12, 1));
+        List<Contact> contactList = asList(
+                new Contact("Tom Ford", Gender.MALE, LocalDate.of(1980, 12, 2)),
+                oldestPerson);
+        when(mockAddressBookRepository.findAll()).thenReturn(contactList);
+
+        Optional<Contact> actualOptionalContact = addressBookService.findOldestPerson();
+
+        assertThat(actualOptionalContact).contains(oldestPerson);
+    }
+
+    // Todo: add a test for same age
 }

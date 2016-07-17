@@ -1,5 +1,6 @@
 package gumtree.addressbook;
 
+import gumtree.addressbook.domain.Contact;
 import gumtree.addressbook.domain.Gender;
 import gumtree.addressbook.persistence.AddressBookRepository;
 import gumtree.addressbook.persistence.FileBasedAddressBookRepository;
@@ -15,5 +16,9 @@ public class AddressBookApp {
 
     public int countNumberOfMales() {
         return addressBookService.countByGender(Gender.MALE);
+    }
+
+    public String getOldestPerson() {
+        return addressBookService.findOldestPerson().map(Contact::getFullName).orElse("");
     }
 }
