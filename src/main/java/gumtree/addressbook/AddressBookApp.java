@@ -9,7 +9,7 @@ import gumtree.addressbook.service.AddressBookService;
 import static java.util.stream.Collectors.toList;
 
 public class AddressBookApp {
-    private AddressBookService addressBookService;
+    private final AddressBookService addressBookService;
 
     public AddressBookApp(AddressBookService addressBookService) {
         this.addressBookService = addressBookService;

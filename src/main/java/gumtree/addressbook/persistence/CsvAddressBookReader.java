@@ -7,8 +7,9 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 import gumtree.addressbook.domain.Contact;
 import gumtree.addressbook.domain.Gender;
@@ -17,27 +18,22 @@ import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 
 import static java.lang.String.format;
-import static java.util.Comparator.comparing;
 
-public final class FileBasedAddressBookRepository implements AddressBookRepository {
+final class CsvAddressBookReader {
     private static final int FULL_NAME_COLUMN_INDEX = 0;
     private static final int GENDER_COLUMN_INDEX = 1;
     private static final int DATE_OF_BIRTH_COLUMN_INDEX = 2;
 
-    private List<Contact> contacts;
+    private final URL csvAddressBookUrl;
 
-    public FileBasedAddressBookRepository(String addressBookFilePath) {
-        Objects.requireNonNull(addressBookFilePath, "addressBookFilePath cannot be null");
+    CsvAddressBookReader(URL csvAddressBookUrl) {
+        this.csvAddressBookUrl = csvAddressBookUrl;
+    }
 
+    List<Contact> read() {
         try {
-            URL addressBookResourceUri = getClass().getClassLoader().getResource(addressBookFilePath);
-
-            if (addressBookResourceUri == null) {
-                throw new IllegalArgumentException("Address book file does not exist");
-            }
-
-            CSVParser parse = CSVParser.parse(addressBookResourceUri, Charset.forName("UTF-8"), CSVFormat.DEFAULT);
-            contacts = new ArrayList<>();
+            CSVParser parse = CSVParser.parse(csvAddressBookUrl, Charset.forName("UTF-8"), CSVFormat.DEFAULT);
+            List<Contact> contacts = new ArrayList<>();
             for (CSVRecord csvRecord : parse) {
                 validateNumberOfColumns(csvRecord);
 
@@ -47,36 +43,11 @@ public final class FileBasedAddressBookRepository implements AddressBookReposito
 
                 contacts.add(new Contact(fullName, gender, dateOfBirth));
             }
+
+            return contacts;
         } catch (IOException e) {
             throw new PersistenceException(e);
         }
-    }
-
-    @Override
-    public List<Contact> findAll() {
-        return new ArrayList<>(contacts);
-    }
-
-    @Override
-    public Optional<Contact> findByFullName(String fullName) {
-        return contacts.stream()
-                .filter(contact -> contact.getFullName().equals(fullName))
-                .findFirst();
-    }
-
-    @Override
-    public Optional<LocalDate> findEarliestDateOfBirth() {
-        return contacts.stream()
-                .sorted(comparing(Contact::getDateOfBirth))
-                .findFirst()
-                .map(Contact::getDateOfBirth);
-    }
-
-    @Override
-    public List<Contact> findByDateOfBirth(LocalDate dateOfBirth) {
-        return contacts.stream()
-                .filter(contact -> contact.getDateOfBirth().equals(dateOfBirth))
-                .collect(Collectors.toList());
     }
 
     private void validateNumberOfColumns(CSVRecord csvRecord) {

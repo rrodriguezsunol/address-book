@@ -12,7 +12,7 @@ import gumtree.addressbook.domain.Gender;
 import gumtree.addressbook.persistence.AddressBookRepository;
 
 public final class AddressBookService {
-    private AddressBookRepository addressBookRepository;
+    private final AddressBookRepository addressBookRepository;
 
     public AddressBookService(AddressBookRepository addressBookRepository) {
         this.addressBookRepository = addressBookRepository;
