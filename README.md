@@ -29,6 +29,6 @@ Good Luck!
 
 Assume max number of contacts is Integer.MAX_VALUE
 
-Assume CSV format follows apache commons-csv DEFAULT formatting settings.
+Assume CSV format follows apache commons-csv DEFAULT formatting settings and charset is UTF-8.
 
 Assume the three contact fields are mandatory.

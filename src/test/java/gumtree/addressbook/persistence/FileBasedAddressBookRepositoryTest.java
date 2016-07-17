@@ -13,6 +13,41 @@ import static org.assertj.core.api.Assertions.catchThrowable;
 public class FileBasedAddressBookRepositoryTest {
 
     @Test
+    public void constructorThrowsExceptionWhenAddressBookPathDoesNotExist() {
+
+        Throwable caughtException = catchThrowable(() -> new FileBasedAddressBookRepository("does not exist"));
+
+        assertThat(caughtException).isExactlyInstanceOf(IllegalArgumentException.class);
+        assertThat(caughtException.getMessage()).isEqualTo("Address book file does not exist");
+    }
+
+    @Test
+    public void constructorThrowsExceptionWhenAddressBookPathIsNull() {
+
+        Throwable caughtException = catchThrowable(() -> new FileBasedAddressBookRepository(null));
+
+        assertThat(caughtException).isExactlyInstanceOf(NullPointerException.class);
+        assertThat(caughtException.getMessage()).isEqualTo("addressBookFilePath cannot be null");
+    }
+
+    @Test
+    public void constructorThrowsExceptionWhenThereIsARecordWithLessThanThreeColumns() {
+
+        Throwable caughtException = catchThrowable(() -> new FileBasedAddressBookRepository("AddressBookWithOneRecordWithoutFullName"));
+
+        assertThat(caughtException).isExactlyInstanceOf(PersistenceException.class);
+        assertThat(caughtException.getMessage()).isEqualTo("Line 1 is invalid. There are missing fields");
+    }
+
+    @Test
+    public void constructorThrowsExceptionWhenThereIsARecordWithInvalidGenderValue() {
+        Throwable caughtException = catchThrowable(() -> new FileBasedAddressBookRepository("AddressBookWithOneRecordWithInvalidGender"));
+
+        assertThat(caughtException).isExactlyInstanceOf(PersistenceException.class);
+        assertThat(caughtException.getMessage()).isEqualTo("Line 2 is invalid. Gender must be one of \"Male\" or \"Female\". value=\"invalid gender\"");
+    }
+
+    @Test
     public void findAllReturnsEmptyListWhenAddressBookIsEmpty() {
         FileBasedAddressBookRepository addressBook = new FileBasedAddressBookRepository("EmptyAddressBook");
 
@@ -54,24 +89,6 @@ public class FileBasedAddressBookRepositoryTest {
     }
 
     @Test
-    public void constructorThrowsExceptionWhenAddressBookPathDoesNotExist() {
-
-        Throwable caughtException = catchThrowable(() -> new FileBasedAddressBookRepository("does not exist"));
-
-        assertThat(caughtException).isExactlyInstanceOf(IllegalArgumentException.class);
-        assertThat(caughtException.getMessage()).isEqualTo("Address book file does not exist");
-    }
-
-    @Test
-    public void constructorThrowsExceptionWhenAddressBookPathIsNull() {
-
-        Throwable caughtException = catchThrowable(() -> new FileBasedAddressBookRepository(null));
-
-        assertThat(caughtException).isExactlyInstanceOf(NullPointerException.class);
-        assertThat(caughtException.getMessage()).isEqualTo("addressBookFilePath cannot be null");
-    }
-
-    @Test
     public void findAllReturnsACopyOfContactList() {
         FileBasedAddressBookRepository addressBook = new FileBasedAddressBookRepository("AddressBookWithSarahOnly");
 
@@ -84,8 +101,4 @@ public class FileBasedAddressBookRepositoryTest {
         List<Contact> secondFindAll = addressBook.findAll();
         assertThat(secondFindAll).isEqualTo(copyOfFirstFindAll);
     }
-
-    // Todo: add test for missing columns
-
-    // Todo: add test for incorrect gender
 }
