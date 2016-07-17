@@ -16,7 +16,7 @@ public class AddressBookAppSteps {
 
     @Given("^I launch the address book app$")
     public void iLaunchTheAddressBookApp() throws Throwable {
-        addressBookApp = new AddressBookApp();
+        addressBookApp = AddressBookAppFactory.newInstance("AddressBook");
     }
 
     @When("^I ask for the total number of males$")
