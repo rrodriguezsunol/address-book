@@ -1,12 +1,11 @@
 package gumtree.addressbook.service;
 
-import java.time.LocalDate;
-import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import com.google.common.collect.TreeMultimap;
 import gumtree.addressbook.domain.Contact;
 import gumtree.addressbook.domain.Gender;
 import gumtree.addressbook.persistence.AddressBookRepository;
@@ -33,16 +32,12 @@ public final class AddressBookService {
             return allContacts;
         }
 
-        TreeMultimap<LocalDate, Contact> dobOrderedMultiMap = TreeMultimap.create();
+        Collections.sort(allContacts, Comparator.comparing(Contact::getDateOfBirth));
 
-        Contact oldestContact = allContacts.stream()
-                .sorted((left, right) -> left.getDateOfBirth().compareTo(right.getDateOfBirth()))
-                .collect(Collectors.toList()).get(0);
+        Contact oldestContact = allContacts.get(0);
 
-        for (Contact contact : allContacts) {
-            dobOrderedMultiMap.put(contact.getDateOfBirth(), contact);
-        }
-
-        return new ArrayList<>(dobOrderedMultiMap.get(oldestContact.getDateOfBirth()));
+        return allContacts.stream()
+                .filter(contact -> contact.getDateOfBirth().equals(oldestContact.getDateOfBirth()))
+                .collect(Collectors.toList());
     }
 }
