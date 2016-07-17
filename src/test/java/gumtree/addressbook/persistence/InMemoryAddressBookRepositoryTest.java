@@ -1,7 +1,6 @@
 package gumtree.addressbook.persistence;
 
 import java.time.LocalDate;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -11,6 +10,7 @@ import org.junit.Test;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
+import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
 
@@ -19,6 +19,7 @@ public class InMemoryAddressBookRepositoryTest {
     private Contact paul = new Contact("Paul Robinson", Gender.MALE, LocalDate.of(1985, 1, 15));
     private Contact gemma = new Contact("Gemma Lane", Gender.FEMALE, LocalDate.of(1991, 11, 20));
     private Contact wes = new Contact("Wes Jackson", Gender.MALE, LocalDate.of(1974, 8, 14));
+    private Contact sarah = new Contact("Sarah Stone", Gender.FEMALE, LocalDate.of(1980, 9, 20));
 
     @Test
     public void constructorThrowsExceptionWhenListOfContactsIsNull() {
@@ -30,16 +31,67 @@ public class InMemoryAddressBookRepositoryTest {
     }
 
     @Test
-    public void findAllReturnsACopyOfContactList() {
-        List<Contact> initialList = Collections.singletonList(new Contact("New contact", Gender.MALE, LocalDate.now()));
-        InMemoryAddressBookRepository addressBook = new InMemoryAddressBookRepository(initialList);
+    public void countFemalesReturnsZeroWhenRepositoryReturnsEmptyList() {
+        InMemoryAddressBookRepository addressBookRepository = new InMemoryAddressBookRepository(emptyList());
 
-        List<Contact> firstFindAll = addressBook.findAll();
+        int actualCount = addressBookRepository.countByGender(Gender.FEMALE);
 
-        firstFindAll.add(new Contact("New contact", Gender.MALE, LocalDate.now()));
+        assertThat(actualCount).isZero();
+    }
 
-        List<Contact> secondFindAll = addressBook.findAll();
-        assertThat(secondFindAll).isEqualTo(initialList);
+    @Test
+    public void countMalesReturnsZeroWhenRepositoryReturnsEmptyList() {
+        InMemoryAddressBookRepository addressBookRepository = new InMemoryAddressBookRepository(emptyList());
+
+        int actualCount = addressBookRepository.countByGender(Gender.MALE);
+
+        assertThat(actualCount).isZero();
+    }
+
+    @Test
+    public void countFemalesReturnsOneWhenRepositoryReturnsListWithOneFemale() {
+        InMemoryAddressBookRepository addressBookRepository = new InMemoryAddressBookRepository(singletonList(gemma));
+
+        int actualCount = addressBookRepository.countByGender(Gender.FEMALE);
+
+        assertThat(actualCount).isEqualTo(1);
+    }
+
+    @Test
+    public void countMalesReturnsOneWhenRepositoryReturnsListWithOneMale() {
+        InMemoryAddressBookRepository addressBookRepository = new InMemoryAddressBookRepository(singletonList(paul));
+
+        int actualCount = addressBookRepository.countByGender(Gender.MALE);
+
+        assertThat(actualCount).isEqualTo(1);
+    }
+
+    @Test
+    public void countFemalesReturnsFemaleCountWhenRepositoryReturnsListWithMixedGenders() {
+        InMemoryAddressBookRepository addressBookRepository = new InMemoryAddressBookRepository(asList(gemma, paul, sarah));
+
+        int actualCount = addressBookRepository.countByGender(Gender.FEMALE);
+
+        assertThat(actualCount).isEqualTo(2);
+    }
+
+    @Test
+    public void countMalesReturnsMaleCountWhenRepositoryReturnsListWithMixedGenders() {
+        InMemoryAddressBookRepository addressBookRepository = new InMemoryAddressBookRepository(asList(paul, gemma, wes));
+
+        int actualCount = addressBookRepository.countByGender(Gender.MALE);
+
+        assertThat(actualCount).isEqualTo(2);
+    }
+
+    @Test
+    public void countByGenderThrowsExceptionWhenGenderIsNull() {
+        InMemoryAddressBookRepository addressBookRepository = new InMemoryAddressBookRepository(emptyList());
+
+        Throwable caughtException = catchThrowable(() -> addressBookRepository.countByGender(null));
+
+        assertThat(caughtException).isExactlyInstanceOf(NullPointerException.class);
+        assertThat(caughtException.getMessage()).isEqualTo("gender cannot be null");
     }
 
     @Test

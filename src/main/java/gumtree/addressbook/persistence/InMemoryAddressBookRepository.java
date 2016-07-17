@@ -8,6 +8,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import gumtree.addressbook.domain.Contact;
+import gumtree.addressbook.domain.Gender;
 
 import static java.util.Comparator.comparing;
 
@@ -20,9 +21,12 @@ public final class InMemoryAddressBookRepository implements AddressBookRepositor
         this.contacts = new ArrayList<>(contacts);
     }
 
-    @Override
-    public List<Contact> findAll() {
-        return new ArrayList<>(contacts);
+    public int countByGender(Gender gender) {
+        Objects.requireNonNull(gender, "gender cannot be null");
+
+        return (int) contacts.stream()
+                .filter(contact -> contact.getGender().equals(gender))
+                .count();
     }
 
     @Override

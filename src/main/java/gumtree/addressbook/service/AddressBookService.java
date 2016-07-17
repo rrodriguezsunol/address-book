@@ -4,7 +4,6 @@ import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 import gumtree.addressbook.domain.Contact;
@@ -19,11 +18,7 @@ public final class AddressBookService {
     }
 
     public int countByGender(Gender gender) {
-        Objects.requireNonNull(gender, "gender cannot be null");
-
-        return (int) addressBookRepository.findAll().stream()
-                .filter(contact -> contact.getGender().equals(gender))
-                .count();
+        return addressBookRepository.countByGender(gender);
     }
 
     public List<Contact> findOldestPeople() {
