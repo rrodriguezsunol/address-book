@@ -15,8 +15,7 @@ import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
 import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 public class AddressBookServiceTest {
 
@@ -98,40 +97,26 @@ public class AddressBookServiceTest {
     }
 
     @Test
-    public void findOldestPeopleReturnsEmptyWhenThereAreNoContacts() {
-        when(mockAddressBookRepository.findAll()).thenReturn(emptyList());
+    public void findOldestPeopleReturnsEmptyWhenThereIsNoEarliestDateOfBirth() {
+        when(mockAddressBookRepository.findEarliestDateOfBirth()).thenReturn(Optional.empty());
 
         List<Contact> actualOptionalContact = addressBookService.findOldestPeople();
 
         assertThat(actualOptionalContact).isEmpty();
+        verify(mockAddressBookRepository, never()).findByDateOfBirth(any(LocalDate.class));
     }
 
     @Test
-    public void findOldestPeopleReturnsOldestPerson() {
-        Contact oldestPerson = new Contact("Sara Stone", Gender.FEMALE, LocalDate.of(1980, 12, 1));
-        List<Contact> contactList = asList(
-                new Contact("Tom Ford", Gender.MALE, LocalDate.of(1980, 12, 2)),
-                oldestPerson);
-        when(mockAddressBookRepository.findAll()).thenReturn(contactList);
+    public void findOldestPeopleReturnsListOfContactsThatMatchTheGivenDateOfBirth() {
+        LocalDate earliestDateOfBirth = LocalDate.of(1980, 12, 2);
+        when(mockAddressBookRepository.findEarliestDateOfBirth()).thenReturn(Optional.of(earliestDateOfBirth));
+
+        List<Contact> expectedOldestPeople = singletonList(new Contact("Tom Ford", Gender.MALE, earliestDateOfBirth));
+        when(mockAddressBookRepository.findByDateOfBirth(earliestDateOfBirth)).thenReturn(expectedOldestPeople);
 
         List<Contact> actualOptionalContact = addressBookService.findOldestPeople();
 
-        assertThat(actualOptionalContact).containsExactly(oldestPerson);
-    }
-
-    @Test
-    public void findOldestPersonWhenTwoOrMorePeopleHaveTheSameAge() {
-        Contact oldestPersonOne = new Contact("Tom Ford", Gender.MALE, LocalDate.of(1980, 12, 1));
-        Contact oldestPersonTwo = new Contact("Sara Stone", Gender.FEMALE, LocalDate.of(1980, 12, 1));
-        List<Contact> contactListWithTwoPeopleWithTheSameAge = asList(
-                new Contact("Bill MccKnight", Gender.FEMALE, LocalDate.of(1985, 12, 1)),
-                oldestPersonOne,
-                oldestPersonTwo);
-        when(mockAddressBookRepository.findAll()).thenReturn(contactListWithTwoPeopleWithTheSameAge);
-
-        List<Contact> actualOldestPeople = addressBookService.findOldestPeople();
-
-        assertThat(actualOldestPeople).containsOnly(oldestPersonTwo, oldestPersonOne);
+        assertThat(actualOptionalContact).isEqualTo(expectedOldestPeople);
     }
 
     @Test

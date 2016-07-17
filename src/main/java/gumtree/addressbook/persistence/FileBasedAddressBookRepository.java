@@ -8,6 +8,7 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import gumtree.addressbook.domain.Contact;
 import gumtree.addressbook.domain.Gender;
@@ -16,8 +17,9 @@ import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 
 import static java.lang.String.format;
+import static java.util.Comparator.comparing;
 
-public class FileBasedAddressBookRepository implements AddressBookRepository {
+public final class FileBasedAddressBookRepository implements AddressBookRepository {
     private static final int FULL_NAME_COLUMN_INDEX = 0;
     private static final int GENDER_COLUMN_INDEX = 1;
     private static final int DATE_OF_BIRTH_COLUMN_INDEX = 2;
@@ -57,7 +59,24 @@ public class FileBasedAddressBookRepository implements AddressBookRepository {
 
     @Override
     public Optional<Contact> findByFullName(String fullName) {
-        return contacts.stream().filter(contact -> contact.getFullName().equals(fullName)).findFirst();
+        return contacts.stream()
+                .filter(contact -> contact.getFullName().equals(fullName))
+                .findFirst();
+    }
+
+    @Override
+    public Optional<LocalDate> findEarliestDateOfBirth() {
+        return contacts.stream()
+                .sorted(comparing(Contact::getDateOfBirth))
+                .findFirst()
+                .map(Contact::getDateOfBirth);
+    }
+
+    @Override
+    public List<Contact> findByDateOfBirth(LocalDate dateOfBirth) {
+        return contacts.stream()
+                .filter(contact -> contact.getDateOfBirth().equals(dateOfBirth))
+                .collect(Collectors.toList());
     }
 
     private void validateNumberOfColumns(CSVRecord csvRecord) {

@@ -1,11 +1,11 @@
 package gumtree.addressbook.service;
 
+import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
+import java.util.Optional;
 
 import gumtree.addressbook.domain.Contact;
 import gumtree.addressbook.domain.Gender;
@@ -27,19 +27,11 @@ public final class AddressBookService {
     }
 
     public List<Contact> findOldestPeople() {
-        List<Contact> allContacts = addressBookRepository.findAll();
+        Optional<LocalDate> earliestDateOfBirth = addressBookRepository.findEarliestDateOfBirth();
 
-        if (allContacts.isEmpty()) {
-            return allContacts;
-        }
-
-        Collections.sort(allContacts, Comparator.comparing(Contact::getDateOfBirth));
-
-        Contact oldestContact = allContacts.get(0);
-
-        return allContacts.stream()
-                .filter(contact -> contact.getDateOfBirth().equals(oldestContact.getDateOfBirth()))
-                .collect(Collectors.toList());
+        return earliestDateOfBirth
+                .map(addressBookRepository::findByDateOfBirth)
+                .orElse(Collections.emptyList());
     }
 
     public long ageDifferenceInDays(String firstPersonFullName, String secondPersonFullName) {

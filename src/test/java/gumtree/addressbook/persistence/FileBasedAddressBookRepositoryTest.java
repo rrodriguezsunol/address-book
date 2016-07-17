@@ -133,4 +133,62 @@ public class FileBasedAddressBookRepositoryTest {
     }
 
     // Todo: what to do when more than one contact have the same name?
+
+    @Test
+    public void findEarliestDateOfBirthReturnsEmptyWhenAddressBookIsEmpty() {
+        FileBasedAddressBookRepository addressBook = new FileBasedAddressBookRepository("EmptyAddressBook");
+
+        Optional<LocalDate> actualDateOfBirth = addressBook.findEarliestDateOfBirth();
+
+        assertThat(actualDateOfBirth).isEmpty();
+    }
+
+    @Test
+    public void findEarliestDateOfBirthReturnsTheDateOfBirthOfTheOldestContact() {
+        FileBasedAddressBookRepository addressBook = new FileBasedAddressBookRepository("AddressBookWithMultipleContacts");
+
+        Optional<LocalDate> actualDateOfBirth = addressBook.findEarliestDateOfBirth();
+
+        assertThat(actualDateOfBirth).contains(LocalDate.of(1974, 8, 14));
+    }
+
+    @Test
+    public void findByDateOfBirthReturnsEmptyWhenAddressBookIsEmpty() {
+        FileBasedAddressBookRepository addressBook = new FileBasedAddressBookRepository("EmptyAddressBook");
+
+        List<Contact> actualContacts = addressBook.findByDateOfBirth(LocalDate.now());
+
+        assertThat(actualContacts).isEmpty();
+    }
+
+    @Test
+    public void findByDateOfBirthReturnsEmptyWhenNoContactInAddressBookMatchesGivenDate() {
+        FileBasedAddressBookRepository addressBook = new FileBasedAddressBookRepository("AddressBookWithMultipleContacts");
+
+        List<Contact> actualContacts = addressBook.findByDateOfBirth(LocalDate.now());
+
+        assertThat(actualContacts).isEmpty();
+    }
+
+    @Test
+    public void findByDateOfBirthReturnsSingleContactThatMatchesTheGivenDate() {
+        FileBasedAddressBookRepository addressBook = new FileBasedAddressBookRepository("AddressBookWithMultipleContacts");
+
+        List<Contact> actualContacts = addressBook.findByDateOfBirth(LocalDate.of(1974, 8, 14));
+
+        Contact wes = new Contact("Wes Jackson", Gender.MALE, LocalDate.of(1974, 8, 14));
+        assertThat(actualContacts).containsExactly(wes);
+    }
+
+    @Test
+    public void findByDateOfBirthReturnsAllContactThatMatchTheGivenDate() {
+        FileBasedAddressBookRepository addressBook = new FileBasedAddressBookRepository("AddressBookWithMoreThanTwoContactsWithTheSameAge");
+
+        LocalDate specifiedDateOfBirth = LocalDate.of(1991, 11, 20);
+        List<Contact> actualContacts = addressBook.findByDateOfBirth(specifiedDateOfBirth);
+
+        Contact paul = new Contact("Paul Robinson", Gender.MALE, specifiedDateOfBirth);
+        Contact gemma = new Contact("Gemma Lane", Gender.FEMALE, specifiedDateOfBirth);
+        assertThat(actualContacts).containsOnly(gemma, paul);
+    }
 }
