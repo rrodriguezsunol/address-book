@@ -27,8 +27,10 @@ Good Luck!
 
 ## Assumptions
 
-Assume max number of contacts is Integer.MAX_VALUE
+- Assume max number of contacts is Integer.MAX_VALUE.
 
-Assume CSV format follows apache commons-csv DEFAULT formatting settings and charset is UTF-8.
+- Assume CSV format follows apache commons-csv DEFAULT formatting settings and charset is UTF-8.
 
-Assume the three contact fields are mandatory.
+- Assume the three contact fields are mandatory.
+
+- With regards to question 3, what would be the desired behaviour if more than one contact has the same name? The current implementation just picks the first one as read from the Csv file.
