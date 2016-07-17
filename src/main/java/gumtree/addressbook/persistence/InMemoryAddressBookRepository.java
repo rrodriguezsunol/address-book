@@ -27,6 +27,8 @@ public final class InMemoryAddressBookRepository implements AddressBookRepositor
 
     @Override
     public Optional<Contact> findByFullName(String fullName) {
+        Objects.requireNonNull(fullName, "fullName cannot be null");
+
         return contacts.stream()
                 .filter(contact -> contact.getFullName().equals(fullName))
                 .findFirst();
@@ -42,6 +44,8 @@ public final class InMemoryAddressBookRepository implements AddressBookRepositor
 
     @Override
     public List<Contact> findByDateOfBirth(LocalDate dateOfBirth) {
+        Objects.requireNonNull(dateOfBirth, "dateOfBirth cannot be null");
+
         return contacts.stream()
                 .filter(contact -> contact.getDateOfBirth().equals(dateOfBirth))
                 .collect(Collectors.toList());

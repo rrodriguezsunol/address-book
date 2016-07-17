@@ -60,6 +60,16 @@ public class InMemoryAddressBookRepositoryTest {
         assertThat(actualContact).contains(gemma);
     }
 
+    @Test
+    public void findByNameThrowsExceptionWhenFullNameIsNull() {
+        InMemoryAddressBookRepository addressBook = new InMemoryAddressBookRepository(asList(paul, gemma, wes));
+
+        Throwable caughtException = catchThrowable(() -> addressBook.findByFullName(null));
+
+        assertThat(caughtException).isExactlyInstanceOf(NullPointerException.class);
+        assertThat(caughtException).hasMessage("fullName cannot be null");
+    }
+
     // Todo: what to do when more than one contact have the same name?
 
     @Test
@@ -115,5 +125,15 @@ public class InMemoryAddressBookRepositoryTest {
         List<Contact> actualContacts = addressBook.findByDateOfBirth(gemma.getDateOfBirth());
 
         assertThat(actualContacts).containsOnly(gemma, anotherContactWithSameDateOfBirthAsGemma);
+    }
+
+    @Test
+    public void findByDateOfBirthThrowsExceptionWhenDateOfBirthIsNull() {
+        InMemoryAddressBookRepository addressBook = new InMemoryAddressBookRepository(asList(paul, gemma, wes));
+
+        Throwable caughtException = catchThrowable(() -> addressBook.findByDateOfBirth(null));
+
+        assertThat(caughtException).isExactlyInstanceOf(NullPointerException.class);
+        assertThat(caughtException).hasMessage("dateOfBirth cannot be null");
     }
 }
